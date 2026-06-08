@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE 防封鎖訊息變體生成器 | 雙效改寫混淆工具</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Decorative Glow Orbs -->
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+
+    <header class="app-header">
+        <div class="container header-container">
+            <div class="logo-area">
+                <div class="logo-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div>
+                    <h1>LINE 防封鎖訊息變體生成器</h1>
+                    <p class="app-tagline">防止因頻繁轉發相同內容而被 LINE 系統判定洗版、限制或封鎖帳號</p>
+                </div>
+            </div>
+            <div class="header-controls">
+                <!-- Theme Switcher Pill -->
+                <div class="theme-switcher" id="theme-switcher">
+                    <button class="theme-btn active" id="theme-btn-fresh" data-theme="fresh">
+                        🍃 清新微光
+                    </button>
+                    <button class="theme-btn" id="theme-btn-cyber" data-theme="cyber">
+                        🌌 科技暗黑
+                    </button>
+                </div>
+                
+                <div class="header-badges">
+                    <span class="badge badge-purple"><i class="fa-solid fa-bolt"></i> 演算法混淆</span>
+                    <span class="badge badge-blue"><i class="fa-solid fa-brain"></i> Gemini AI 語意改寫</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container app-layout">
+        <!-- LEFT COLUMN: Control Panel & Settings -->
+        <section class="control-panel">
+            <!-- Computer Use Simulator Card -->
+            <div class="card simulator-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-robot"></i> 🤖 Computer Use 智能示範沙盒</h2>
+                    <span class="badge badge-purple">Agent Simulation</span>
+                </div>
+                <p class="tab-description">模擬未來 AI Agent 透過 <strong>Computer Use</strong> 機制自動操作瀏覽器。您將看到虛擬游標自動移動、打字、調整參數與點擊，展現多種防封鎖混淆方案。</p>
+                
+                <div class="sim-controls-wrapper">
+                    <div class="form-group">
+                        <label for="sim-scenario">選擇操作示範場景</label>
+                        <select id="sim-scenario">
+                            <option value="scenario-non-ai" selected>1. 不用 AI 的多種混淆做法 (3 變體)</option>
+                            <option value="scenario-ai-hybrid">2. Gemini AI 語意改寫與混合模式 (2 變體)</option>
+                            <option value="scenario-custom-noise">3. 自訂無關雜訊句庫演示 (4 變體)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="sim-btns">
+                        <button class="btn btn-secondary btn-sm btn-sim-action" id="btn-start-sim">
+                            <i class="fa-solid fa-play"></i> 開始示範
+                        </button>
+                        <button class="btn btn-secondary btn-sm btn-sim-action hidden" id="btn-pause-sim">
+                            <i class="fa-solid fa-pause"></i> 暫停
+                        </button>
+                        <button class="btn btn-secondary btn-sm btn-sim-action hidden" id="btn-stop-sim">
+                            <i class="fa-solid fa-stop text-danger"></i> 停止
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Simulation Monospace Console HUD -->
+                <div class="sim-hud hidden" id="sim-hud">
+                    <div class="sim-hud-header">
+                        <span><i class="fa-solid fa-terminal"></i> Agent Action Terminal</span>
+                        <span class="sim-hud-status" id="sim-hud-status">Executing...</span>
+                    </div>
+                    <div class="sim-hud-body" id="sim-hud-body">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Text Input Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-pen-to-square"></i> 1. 輸入原始訊息</h2>
+                    <div class="header-meta">
+                        <span class="char-counter" id="char-counter">0 字</span>
+                        <span class="hash-display" id="orig-hash" style="margin-left: 10px; font-family: monospace; font-size: 0.8rem; color: var(--text-muted);">Hash: -</span>
+                    </div>
+                </div>
+                <div class="input-wrapper">
+                    <textarea id="input-message" placeholder="請在此貼上您要轉發的 LINE 訊息、廣告文宣或通知內容...&#10;（若有包含網址，AI 改寫時會自動保留原始網址）"></textarea>
+                    <button class="clear-btn" id="btn-clear-input" title="清除輸入"><i class="fa-solid fa-circle-xmark"></i></button>
+                </div>
+            </div>
+
+            <!-- Parameters Card -->
+            <div class="card settings-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-sliders"></i> 2. 設定生成參數</h2>
+                </div>
+                
+                <div class="setting-group">
+                    <div class="setting-label">
+                        <span>生成變體數量</span>
+                        <strong id="variant-count-val">5 個</strong>
+                    </div>
+                    <div class="range-slider-wrapper">
+                        <input type="range" id="variant-count" min="1" max="20" value="5" step="1">
+                        <div class="range-ticks">
+                            <span>1</span>
+                            <span>5</span>
+                            <span>10</span>
+                            <span>15</span>
+                            <span>20</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mode Tabs -->
+                <div class="tab-wrapper">
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="tab-non-ai">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> 演算法混淆 (不用 AI)
+                        </button>
+                        <button class="tab-btn" data-tab="tab-ai">
+                            <i class="fa-solid fa-robot"></i> Gemini AI 改寫
+                        </button>
+                    </div>
+
+                    <!-- Tab 1: Non-AI Algorithm Settings -->
+                    <div class="tab-content active" id="tab-non-ai">
+                        <p class="tab-description">利用隨機字元插值與符號變異，在不影響視覺閱讀前提下，改變文字的雜湊值 (Hash)，突破精確匹配過濾。</p>
+                        
+                        <div class="checkbox-options">
+                            <label class="checkbox-card">
+                                <input type="checkbox" id="opt-zws" checked>
+                                <span class="checkbox-custom"><i class="fa-solid fa-check"></i></span>
+                                <div class="option-info">
+                                    <strong>零寬度字元混淆 (強烈推薦)</strong>
+                                    <span>在字詞間隨機插入隱形 Unicode 字元，使每條訊息的編碼都獨一無二。</span>
+                                </div>
+                            </label>
+
+                            <label class="checkbox-card">
+                                <input type="checkbox" id="opt-punctuation" checked>
+                                <span class="checkbox-custom"><i class="fa-solid fa-check"></i></span>
+                                <div class="option-info">
+                                    <strong>標點符號隨機變異</strong>
+                                    <span>隨機切換全/半形標點，或將逗號 `，` 替換為空格或波浪號 `~`。</span>
+                                </div>
+                            </label>
+
+                            <label class="checkbox-card">
+                                <input type="checkbox" id="opt-emoji" checked>
+                                <span class="checkbox-custom"><i class="fa-solid fa-check"></i></span>
+                                <div class="option-info">
+                                    <strong>隨機插入表情符號 (Emoji)</strong>
+                                    <span>在句尾隨機加入 🎉, ✨, 👍, 📢, 💡 等動態表情符號。</span>
+                                </div>
+                            </label>
+
+                            <label class="checkbox-card">
+                                <input type="checkbox" id="opt-salutation" checked>
+                                <span class="checkbox-custom"><i class="fa-solid fa-check"></i></span>
+                                <div class="option-info">
+                                    <strong>首尾隨機親切問候語</strong>
+                                    <span>首部隨機插入「哈囉！」、「您好～」，尾部隨機插入「祝順心！」、「感恩」。</span>
+                                </div>
+                            </label>
+
+                            <label class="checkbox-card">
+                                <input type="checkbox" id="opt-synonyms">
+                                <span class="checkbox-custom"><i class="fa-solid fa-check"></i></span>
+                                <div class="option-info">
+                                    <strong>基礎詞彙同義替換</strong>
+                                    <span>自動比對字庫，替換如「提供➔供應」、「產品➔商品」、「立刻➔馬上」等。</span>
+                                </div>
+                            </label>
+
+                            <label class="checkbox-card">
+                                <input type="checkbox" id="opt-width" checked>
+                                <span class="checkbox-custom"><i class="fa-solid fa-check"></i></span>
+                                <div class="option-info">
+                                    <strong>英數字全半形與同形字替換 (Homoglyph)</strong>
+                                    <span>隨機將英數字轉為全形，或替換為外觀相近的俄文/希臘變體字（如 `c`➔`с`），徹底變異特徵。</span>
+                                </div>
+                            </label>
+
+                            <label class="checkbox-card">
+                                <input type="checkbox" id="opt-interleave">
+                                <span class="checkbox-custom"><i class="fa-solid fa-check"></i></span>
+                                <div class="option-info">
+                                    <strong>中文字詞標點交織 (Interleaving)</strong>
+                                    <span>在中文詞語中，不規律地隨機插入微小中點符號（如 `·`）以打碎特徵，不影響視覺排版。</span>
+                                </div>
+                            </label>
+
+                            <label class="checkbox-card">
+                                <input type="checkbox" id="opt-noise-quote">
+                                <span class="checkbox-custom"><i class="fa-solid fa-check"></i></span>
+                                <div class="option-info">
+                                    <strong>隨機無關句庫/心靈雞湯干擾</strong>
+                                    <span>在訊息中隨機穿插一句與正文無關的正面語錄或溫馨小提醒。</span>
+                                </div>
+                            </label>
+
+                            <label class="checkbox-card">
+                                <input type="checkbox" id="opt-timestamp" checked>
+                                <span class="checkbox-custom"><i class="fa-solid fa-check"></i></span>
+                                <div class="option-info">
+                                    <strong>秒級動態時間戳記與序號</strong>
+                                    <span>在訊息結尾隨機加上 `【時間: 14:32:15 | 編號: A92B】`，保證 100% 絕對唯一。</span>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Advanced Custom Text pools collapsible -->
+                        <div class="advanced-settings-toggle" id="btn-toggle-advanced">
+                            <span><i class="fa-solid fa-gears"></i> 自訂無關文字與語錄庫 (可自訂前置/後置文字池)</span>
+                            <i class="fa-solid fa-chevron-down toggle-arrow" id="advanced-arrow"></i>
+                        </div>
+
+                        <div class="advanced-settings-panel hidden" id="advanced-settings-panel">
+                            <div class="form-group">
+                                <label for="custom-prefixes">自訂前置問候語池 (一行一個)</label>
+                                <textarea id="custom-prefixes" placeholder="輸入可隨機替代的前置句..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="custom-suffixes">自訂後置祝福語池 (一行一個)</label>
+                                <textarea id="custom-suffixes" placeholder="輸入可隨機替代的後置句..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="custom-quotes">自訂無關雜訊句庫 (心靈雞湯，一行一個)</label>
+                                <textarea id="custom-quotes" placeholder="輸入可隨機穿插的無關句..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Gemini AI Settings -->
+                    <div class="tab-content" id="tab-ai">
+                        <p class="tab-description">呼叫 Google Gemini 模型，進行深度的句型重組與詞彙改寫，確保意思 100% 相同，但字面特徵截然不同。</p>
+                        
+                        <div class="ai-form">
+                            <!-- API Key Input -->
+                            <div class="form-group">
+                                <div class="form-label-with-link">
+                                    <label for="api-key">Google Gemini API Key</label>
+                                    <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="link-btn">
+                                        <i class="fa-solid fa-arrow-up-right-from-square"></i> 取得免費金鑰
+                                    </a>
+                                </div>
+                                <div class="api-key-input-wrapper">
+                                    <input type="password" id="api-key" placeholder="請輸入 AI Studio 的 API 金鑰 (AI_...)">
+                                    <button class="toggle-password" id="btn-toggle-key" type="button" title="顯示金鑰">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
+                                <span class="form-help">金鑰將安全地儲存在您的瀏覽器本地，不會傳送到第三方伺服器。</span>
+                            </div>
+
+                            <!-- Model Select -->
+                            <div class="form-group">
+                                <label for="ai-model">選擇 Gemini 模型</label>
+                                <select id="ai-model">
+                                    <option value="gemini-2.5-flash" selected>Gemini 2.5 Flash (推薦 - 速度極快且節省 Token)</option>
+                                    <option value="gemini-2.0-flash">Gemini 2.0 Flash (新版 - 反應靈敏)</option>
+                                    <option value="gemini-1.5-flash">Gemini 1.5 Flash (標準版)</option>
+                                    <option value="gemini-2.5-pro">Gemini 2.5 Pro (高品質重寫 - 速度較慢)</option>
+                                    <option value="custom">自訂模型名稱...</option>
+                                </select>
+                                <input type="text" id="custom-model-input" placeholder="請輸入模型 ID，例如: gemini-2.5-flash" class="custom-model-input hidden">
+                            </div>
+
+                            <!-- Tone Select -->
+                            <div class="form-group">
+                                <label for="ai-tone">改寫風格</label>
+                                <select id="ai-tone">
+                                    <option value="professional" selected>專業商務 (語氣誠懇、字句正式)</option>
+                                    <option value="casual">親切日常 (適合社群轉發、多用「喔」、「唷」)</option>
+                                    <option value="promotional">熱銷促銷 (凸顯限時限量好康、加強吸引力)</option>
+                                    <option value="concise">簡短精煉 (去蕪存菁、只保留精華核心)</option>
+                                </select>
+                            </div>
+
+                            <!-- Hybrid Mode Checkbox -->
+                            <label class="checkbox-card hybrid-card">
+                                <input type="checkbox" id="opt-hybrid" checked>
+                                <span class="checkbox-custom"><i class="fa-solid fa-check"></i></span>
+                                <div class="option-info">
+                                    <strong>AI 語意改寫 + 零寬度字元混合模式 (最強防護)</strong>
+                                    <span>先由 Gemini 進行語意改寫，再將生成的變體加入零寬度字元，達到雙重保護。</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generate Action Button -->
+                <button class="btn btn-generate" id="btn-generate">
+                    <span class="btn-text"><i class="fa-solid fa-rotate"></i> 開始批量生成防封鎖變體</span>
+                    <span class="spinner hidden"><i class="fa-solid fa-circle-notch fa-spin"></i> 生成中...</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- RIGHT COLUMN: Output & Preview -->
+        <section class="preview-panel">
+            <div class="card results-card">
+                <div class="card-header results-header">
+                    <div class="results-title">
+                        <h2><i class="fa-solid fa-square-poll-horizontal"></i> 3. 生成變體結果</h2>
+                        <span class="results-count-badge hidden" id="results-count">共 0 個變體</span>
+                    </div>
+                    <div class="results-actions hidden" id="results-actions">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-zws-visibility">
+                            <span class="slider-round"></span>
+                            <span class="toggle-label"><i class="fa-solid fa-eye-slash"></i> 顯示隱形字元</span>
+                        </label>
+                        <button class="btn btn-secondary btn-sm" id="btn-export-csv">
+                            <i class="fa-solid fa-file-csv"></i> 導出 CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state" id="empty-state">
+                    <div class="empty-icon"><i class="fa-solid fa-message-slash"></i></div>
+                    <h3>尚未生成變體</h3>
+                    <p>請在左側輸入原始訊息並點擊「開始批量生成」，系統將在此處為您產出多個可用於群組發送的不重複變體訊息。</p>
+                </div>
+
+                <!-- Loading State (Skeleton UI) -->
+                <div class="skeleton-container hidden" id="skeleton-container">
+                    <div class="skeleton-card">
+                        <div class="skeleton-header">
+                            <div class="skeleton-title"></div>
+                            <div class="skeleton-btn"></div>
+                        </div>
+                        <div class="skeleton-body"></div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="skeleton-header">
+                            <div class="skeleton-title"></div>
+                            <div class="skeleton-btn"></div>
+                        </div>
+                        <div class="skeleton-body"></div>
+                    </div>
+                </div>
+
+                <!-- Results List -->
+                <div class="results-list hidden" id="results-list">
+                    <!-- Populated dynamically by JS -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- KNOWLEDGE SECTION: Bento Style grid -->
+    <section class="container info-section">
+        <div class="section-title">
+            <span class="section-tag">SECURITY GUIDE</span>
+            <h2>LINE 轉發防封鎖科普與最佳實踐</h2>
+            <p>了解 LINE 偵測洗版的運算機制，並搭配本工具實現安全、順暢的宣傳發送。</p>
+        </div>
+
+        <div class="bento-grid">
+            <div class="bento-card">
+                <div class="bento-icon text-purple"><i class="fa-solid fa-magnifying-glass"></i></div>
+                <h3>1. LINE 是如何偵測洗版的？</h3>
+                <p>LINE 的反垃圾郵件算法主要採用「<strong>完全匹配比對 (Exact String Matching)</strong>」與「<strong>內容雜湊值 (Hash)</strong>」比對。如果在幾秒鐘內，相同的字串（包括空白、連結）被發送到多個不同的群組，系統會立刻將其標記為群發廣告，進而觸發警告或帳號停權。</p>
+            </div>
+
+            <div class="bento-card">
+                <div class="bento-icon text-blue"><i class="fa-solid fa-compass-drafting"></i></div>
+                <h3>2. 零寬度字元 (ZWS) 的混淆原理</h3>
+                <p>零寬度字元（如 <code>\u200B</code>、<code>\u200C</code>）在一般通訊軟體中是<strong>完全隱形、寬度為零</strong>的。但對於電腦系統而言，多加一個零寬度字元，整段話的二進位哈希編碼 (Hash Value) 就會徹底改變。本工具利用演算法在句子中随机安插這些字元，讓 LINE 伺服器認為它們是「完全不同的訊息」，從而規避相同文字過濾。</p>
+            </div>
+
+            <div class="bento-card">
+                <div class="bento-icon text-green"><i class="fa-solid fa-face-smile"></i></div>
+                <h3>3. 為什麼 AI 語意改寫更安全？</h3>
+                <p>如果 LINE 升級了演算法，加入對隱形字元的過濾或詞彙相似度分析，則單純的編碼混淆可能會失效。這時使用 <strong>Gemini AI 進行語意改寫</strong> 是終極解決方案。AI 會重新架構句子結構，更換近義詞，但保證活動網址與關鍵細節不變。這種「本質相同但文本不同」的訊息，任何機器算法都無法判定其為重複發送。</p>
+            </div>
+
+            <div class="bento-card">
+                <div class="bento-icon text-red"><i class="fa-solid fa-circle-exclamation"></i></div>
+                <h3>4. 安全轉發日常守則 (防封鎖指南)</h3>
+                <ul class="guidelines-list">
+                    <li><i class="fa-solid fa-circle-check"></i> <strong>慢速發送</strong>：每個群組發送間隔建議保持 5-10 秒以上，不要連續點按發送。</li>
+                    <li><i class="fa-solid fa-circle-check"></i> <strong>一組一變體</strong>：發送一個群組就複製一個不同的變體，避免連續兩個群組使用同一個。</li>
+                    <li><i class="fa-solid fa-circle-check"></i> <strong>避免敏感詞</strong>：內容中避免大量使用「免費、賺錢、提現、兼職」等高風險廣告關鍵字。</li>
+                    <li><i class="fa-solid fa-circle-check"></i> <strong>定時更換圖片</strong>：若有搭配宣傳圖，最好也定時更換，或使用不同檔名。</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer-bar">
+        <div class="container text-center">
+            <p>© 2026 LINE 防封鎖訊息變體生成器. 由 Antigravity 團隊精心打造</p>
+            <p class="text-muted">本工具僅供合法活動宣傳、商務通知及合規社群推廣使用。請勿用於違法廣告或惡意騷擾。</p>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <span class="toast-icon"><i class="fa-solid fa-circle-check"></i></span>
+        <span class="toast-message">複製成功！已標記該變體為已使用。</span>
+    </div>
+
+    <!-- Virtual Cursor for Agent Simulation -->
+    <div class="virtual-cursor hidden" id="virtual-cursor">
+        <i class="fa-solid fa-mouse-pointer"></i>
+        <div class="click-ripple" id="click-ripple"></div>
+    </div>
+
+    <!-- Interactive Script -->
+    <script src="script.js"></script>
+</body>
+</html>

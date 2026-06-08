@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE 轉發特徵混淆測試沙盒 & AI 教學講義 (Non-AI)</title>
+    <!-- Tailwind CSS for modern premium UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        :root {
+            /* Theme 1: Fresh & Minimal Light (Default) */
+            --bg-primary: #f8fafc; /* slate-50 */
+            --bg-card: #ffffff; /* white */
+            --border-card: #e2e8f0; /* slate-200 */
+            --text-main: #0f172a; /* slate-900 */
+            --text-muted: #64748b; /* slate-500 */
+            --text-desc: #475569; /* slate-600 */
+            --bg-input: #f1f5f9; /* slate-100 */
+            --border-input: #cbd5e1; /* slate-300 */
+            --accent-primary: #10b981; /* emerald-500 */
+            --accent-hover: #059669; /* emerald-600 */
+            --header-bg: rgba(255, 255, 255, 0.85);
+            --header-border: #e2e8f0;
+            --panel-inner-bg: #f8fafc;
+            --panel-inner-border: #e2e8f0;
+
+            /* Visualizer Diagnostics Tag Colors */
+            --tag-zwc-bg: #fff1f2;
+            --tag-zwc-text: #e11d48;
+            --tag-zwc-border: #fecdd3;
+
+            --tag-homo-bg: #eff6ff;
+            --tag-homo-text: #2563eb;
+            --tag-homo-border: #bfdbfe;
+
+            --tag-inter-bg: #fffbeb;
+            --tag-inter-text: #d97706;
+            --tag-inter-border: #fde68a;
+
+            --tag-fill-bg: #f0fdf4;
+            --tag-fill-text: #16a34a;
+            --tag-fill-border: #bbf7d0;
+
+            --scrollbar-track: #f1f5f9;
+            --scrollbar-thumb: #cbd5e1;
+            --scrollbar-thumb-hover: #94a3b8;
+        }
+
+        .theme-dark-cyber {
+            /* Theme 2: Cyber Dark (Secondary) */
+            --bg-primary: #020617; /* slate-950 */
+            --bg-card: #0f172a; /* slate-900 */
+            --border-card: #1e293b; /* slate-800 */
+            --text-main: #f1f5f9; /* slate-100 */
+            --text-muted: #94a3b8; /* slate-400 */
+            --text-desc: #cbd5e1; /* slate-300 */
+            --bg-input: #020617; /* slate-950 */
+            --border-input: #1e293b; /* slate-800 */
+            --accent-primary: #3b82f6; /* blue-500 */
+            --accent-hover: #2563eb; /* blue-600 */
+            --header-bg: rgba(15, 23, 42, 0.85);
+            --header-border: #1e293b;
+            --panel-inner-bg: #020617;
+            --panel-inner-border: #1e293b;
+
+            /* Visualizer Diagnostics Tag Colors */
+            --tag-zwc-bg: rgba(244, 63, 94, 0.15);
+            --tag-zwc-text: #fb7185;
+            --tag-zwc-border: rgba(244, 63, 94, 0.3);
+
+            --tag-homo-bg: rgba(59, 130, 246, 0.15);
+            --tag-homo-text: #60a5fa;
+            --tag-homo-border: rgba(59, 130, 246, 0.3);
+
+            --tag-inter-bg: rgba(245, 158, 11, 0.15);
+            --tag-inter-text: #fbbf24;
+            --tag-inter-border: rgba(245, 158, 11, 0.3);
+
+            --tag-fill-bg: rgba(16, 185, 129, 0.15);
+            --tag-fill-text: #34d399;
+            --tag-fill-border: rgba(16, 185, 129, 0.3);
+
+            --scrollbar-track: #1e293b;
+            --scrollbar-thumb: #475569;
+            --scrollbar-thumb-hover: #64748b;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .header-custom {
+            background-color: var(--header-bg);
+            border-color: var(--header-border);
+        }
+        .card-custom {
+            background-color: var(--bg-card);
+            border-color: var(--border-card);
+        }
+        .text-custom-muted {
+            color: var(--text-muted);
+        }
+        .text-custom-desc {
+            color: var(--text-desc);
+        }
+        .input-custom {
+            background-color: var(--bg-input);
+            border-color: var(--border-input);
+            color: var(--text-main);
+        }
+        .panel-inner-custom {
+            background-color: var(--panel-inner-bg);
+            border-color: var(--panel-inner-border);
+        }
+
+        /* Diagnostic visual tags styles */
+        .diag-tag-zwc {
+            background-color: var(--tag-zwc-bg);
+            color: var(--tag-zwc-text);
+            border: 1px solid var(--tag-zwc-border);
+        }
+        .diag-tag-homo {
+            background-color: var(--tag-homo-bg);
+            color: var(--tag-homo-text);
+            border: 1px solid var(--tag-homo-border);
+        }
+        .diag-tag-inter {
+            background-color: var(--tag-inter-bg);
+            color: var(--tag-inter-text);
+            border: 1px solid var(--tag-inter-border);
+        }
+        .diag-tag-fill {
+            background-color: var(--tag-fill-bg);
+            color: var(--tag-fill-text);
+            border: 1px solid var(--tag-fill-border);
+        }
+
+        /* Scrollbar custom styles */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--scrollbar-thumb-hover);
+        }
+
+        /* Theme button style */
+        .btn-theme-active {
+            background-color: var(--accent-primary);
+            color: #ffffff !important;
+        }
+
+        /* Mobile Tap targets */
+        input[type="checkbox"] {
+            min-width: 1.25rem;
+            min-height: 1.25rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+
+    <header class="header-custom border-b backdrop-blur-md sticky top-0 z-50 px-4 py-3 sm:px-6 sm:py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+            <div class="h-10 w-10 shrink-0 rounded-xl bg-gradient-to-tr from-emerald-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-emerald-500/10">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            </div>
+            <div>
+                <h1 class="text-base sm:text-lg font-bold bg-gradient-to-r from-emerald-600 via-indigo-600 to-blue-600 dark:from-slate-100 dark:via-indigo-200 dark:to-blue-300 bg-clip-text text-transparent theme-title">LINE 防封鎖文本擾亂沙盒 & 課堂講義</h1>
+                <p class="text-[10px] sm:text-xs text-custom-muted">基於精實開發原則 • 專屬教學展示整合套件</p>
+            </div>
+        </div>
+
+        <!-- Right Controls: Theme selector & Downloader -->
+        <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+            <!-- Theme Switcher (Interactive Pill buttons) -->
+            <div class="flex bg-slate-200/50 dark:bg-slate-900 p-1 rounded-lg border border-slate-300/40 dark:border-slate-800 text-[10px] sm:text-xs">
+                <button id="theme-btn-fresh" class="px-3 py-1 rounded-md font-bold transition-all flex items-center gap-1 btn-theme-active">
+                    🍃 清新隨主
+                </button>
+                <button id="theme-btn-cyber" class="px-3 py-1 rounded-md font-bold transition-all text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                    🌌 科技暗黑
+                </button>
+            </div>
+
+            <!-- Download Button (Offline distribution friendly) -->
+            <button id="btn-download-html" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-700/10 active:scale-95">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                💾 下載 HTML
+            </button>
+        </div>
+    </header>
+
+    <!-- Content Area -->
+    <div class="flex-1 w-full max-w-[1600px] mx-auto p-4 sm:p-6 flex flex-col gap-8">
+        
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+            <!-- Left Column: Configurator & Inputs (7/12 cols) -->
+            <section class="xl:col-span-7 flex flex-col gap-6">
+                <!-- Input Area -->
+                <div class="card-custom border rounded-2xl p-4 sm:p-5 flex flex-col gap-4 shadow-xl">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs sm:text-sm font-semibold text-custom-muted flex items-center gap-2">
+                            <span class="text-emerald-500">01.</span> 原始推廣文本
+                        </label>
+                        <span id="orig-char-counter" class="text-xs text-custom-muted">0 字元</span>
+                    </div>
+                    <textarea id="original-text" class="w-full h-40 sm:h-44 input-custom border rounded-xl p-3 sm:p-4 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all text-xs sm:text-sm resize-none" placeholder="在此輸入要群發或轉發的推廣訊息、通知 or 網址..."></textarea>
+                </div>
+
+                <div class="card-custom border rounded-2xl p-4 sm:p-5 flex flex-col gap-5 shadow-xl">
+                    <h2 class="text-xs sm:text-sm font-bold text-custom-muted flex items-center gap-2 pb-3 border-b border-slate-200/80 dark:border-slate-800">
+                        <span class="text-emerald-500">02.</span> 混淆擾亂演算法配置
+                    </h2>
+
+                    <!-- Strategy 1: Zero-width insertion -->
+                    <div class="flex flex-col gap-2">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1">
+                            <div class="flex items-start gap-2">
+                                <input type="checkbox" id="enable-zwc" checked class="mt-0.5 rounded text-emerald-600 bg-slate-100 border-slate-300 focus:ring-emerald-500">
+                                <label for="enable-zwc" class="text-xs sm:text-sm font-semibold text-custom-desc cursor-pointer">零寬字元隱碼干擾 (Zero-Width Steganography)</label>
+                            </div>
+                            <span class="text-[10px] text-slate-500 dark:text-slate-400 font-mono bg-slate-200/60 dark:bg-slate-800 px-2 py-0.5 rounded self-start sm:self-auto">肉眼完全無感</span>
+                        </div>
+                        <p class="text-xs text-slate-500 pl-6">在字串中不規律插入不佔空間的零寬字元。每一次生成都會重新隨機分配插入位置。</p>
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 pl-6 mt-1">
+                            <span class="text-xs text-slate-500">干擾強度 (插入頻率)：</span>
+                            <div class="flex items-center gap-3">
+                                <input type="range" id="zwc-intensity" min="1" max="10" value="4" class="w-28 sm:w-32 accent-emerald-500 bg-slate-200 dark:bg-slate-800 h-1 rounded-lg">
+                                <span id="zwc-intensity-val" class="text-xs font-mono text-emerald-600 dark:text-emerald-400">中等 (每10個字注入4處)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Strategy 2: Homoglyph Swapping -->
+                    <div class="flex flex-col gap-2 border-t border-slate-200/80 dark:border-slate-800 pt-4">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1">
+                            <div class="flex items-start gap-2">
+                                <input type="checkbox" id="enable-homoglyph" checked class="mt-0.5 rounded text-emerald-600 bg-slate-100 border-slate-300 focus:ring-emerald-500">
+                                <label for="enable-homoglyph" class="text-xs sm:text-sm font-semibold text-custom-desc cursor-pointer">同形異碼代換 (Homoglyph Variant)</label>
+                            </div>
+                            <span class="text-[10px] text-slate-500 dark:text-slate-400 font-mono bg-slate-200/60 dark:bg-slate-800 px-2 py-0.5 rounded self-start sm:self-auto">字元物理隔離</span>
+                        </div>
+                        <p class="text-xs text-slate-500 pl-6">將英文、部分常見符號代換為外觀極度相似的俄文、希臘字等 Unicode 變體，避開關鍵字偵測。</p>
+                    </div>
+
+                    <!-- Strategy 3: Punctuation Interleaving -->
+                    <div class="flex flex-col gap-2 border-t border-slate-200/80 dark:border-slate-800 pt-4">
+                        <div class="flex items-start gap-2">
+                            <input type="checkbox" id="enable-interleaving" class="mt-0.5 rounded text-emerald-600 bg-slate-100 border-slate-300 focus:ring-emerald-500">
+                            <label for="enable-interleaving" class="text-xs sm:text-sm font-semibold text-custom-desc cursor-pointer">標點字詞交織擾亂 (Interleaving Dividers)</label>
+                        </div>
+                        <p class="text-xs text-slate-500 pl-6">在中文核心字詞間不規律夾雜輕微阻隔標點，打碎連貫的文字特徵。</p>
+                        <div class="flex items-center gap-3 pl-6 mt-1">
+                            <label class="text-xs text-slate-500">交織符號：</label>
+                            <select id="divider-symbol" class="bg-slate-200/60 dark:bg-slate-950 border border-slate-300 dark:border-slate-850 rounded px-2 py-1 text-xs text-custom-muted focus:outline-none">
+                                <option value="·">中間點 (·)</option>
+                                <option value=" ">極細微空白 (Hair Space)</option>
+                                <option value=".">點 (.)</option>
+                                <option value="^">折音號 (^)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-2 border-t border-slate-200/80 dark:border-slate-800 pt-4">
+                        <div class="flex items-start gap-2">
+                            <input type="checkbox" id="enable-synonyms" checked class="mt-0.5 rounded text-emerald-600 bg-slate-100 border-slate-300 focus:ring-emerald-500">
+                            <label for="enable-synonyms" class="text-xs sm:text-sm font-semibold text-custom-desc cursor-pointer">自定義詞彙變體對照 (Synonym Swap Engine)</label>
+                        </div>
+                        <p class="text-xs text-slate-500 pl-6">設定敏感詞，每次生成時隨機從同義池裡抽換，避開 LINE 的行銷文字攔截。</p>
+                        <div class="pl-6 mt-2">
+                            <div class="panel-inner-custom border rounded-xl p-3">
+                                <div class="flex justify-between items-center mb-2 gap-2">
+                                    <span class="text-[10px] sm:text-xs font-semibold text-emerald-600 dark:text-emerald-400">對照替換設定表 (JSON 格式)</span>
+                                    <button id="reset-synonyms" class="text-[9px] sm:text-[10px] text-slate-500 hover:text-slate-700 transition whitespace-nowrap">重設預設</button>
+                                </div>
+                                <textarea id="synonyms-config" class="w-full h-24 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-2 font-mono text-xs text-emerald-600 dark:text-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-500" placeholder="JSON format"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Strategy 5: Dynamic Context Padding (前後贅字可選模組) -->
+                    <div class="flex flex-col gap-3 border-t border-slate-200/80 dark:border-slate-800 pt-4">
+                        <div class="flex items-start gap-2">
+                            <input type="checkbox" id="enable-padding" checked class="mt-0.5 rounded text-emerald-600 bg-slate-100 border-slate-300 focus:ring-emerald-500">
+                            <label for="enable-padding" class="text-xs sm:text-sm font-semibold text-custom-desc cursor-pointer">動態前後贅字墊片 (Dynamic Context Padding)</label>
+                        </div>
+                        <p class="text-xs text-slate-500 pl-6">在主要內容前後附加對語意影響極低的問候、防封驗證碼，拉大發送間隔的文字差異。</p>
+                        
+                        <div class="pl-6 grid grid-cols-1 md:grid-cols-2 gap-4 mt-1">
+                            <!-- Head Padding Options -->
+                            <div class="panel-inner-custom border rounded-xl p-3 flex flex-col gap-2">
+                                <span class="text-xs font-semibold text-custom-desc">前方引文 (Header Padding)</span>
+                                <select id="header-padding-type" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded px-2.5 py-1.5 text-xs text-custom-muted">
+                                    <option value="greetings">溫馨招呼、日子問候</option>
+                                    <option value="syscodes">系統防封虛擬編號</option>
+                                    <option value="quote">精選微語錄/名言</option>
+                                    <option value="custom">自定義前方引文群 (隨機)</option>
+                                </select>
+                                <textarea id="custom-headers" class="w-full h-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-1.5 text-xs text-slate-500 hidden" placeholder="多組引句請以半形逗號 , 分隔"></textarea>
+                            </div>
+
+                            <!-- Tail Padding Options -->
+                            <div class="panel-inner-custom border rounded-xl p-3 flex flex-col gap-2">
+                                <span class="text-xs font-semibold text-custom-desc">後方引文 (Footer Padding)</span>
+                                <select id="footer-padding-type" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded px-2.5 py-1.5 text-xs text-custom-muted">
+                                    <option value="timecode" selected>高動態時間戳 + 防封微代碼</option>
+                                    <option value="disclaimer">免責說明與自動化宣告</option>
+                                    <option value="custom">自定義後方引文群 (隨機)</option>
+                                </select>
+                                <textarea id="custom-footers" class="w-full h-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-1.5 text-xs text-slate-500 hidden" placeholder="多組結語請以半形逗號 , 分隔"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="xl:col-span-5 flex flex-col gap-6">
+                <!-- Process & Action Panel -->
+                <div class="card-custom border rounded-2xl p-4 sm:p-5 flex flex-col gap-4 shadow-xl">
+                    <h2 class="text-xs sm:text-sm font-bold text-custom-muted flex items-center gap-2 pb-2 border-b border-slate-200/80 dark:border-slate-800">
+                        <span class="text-emerald-500">03.</span> 執行 & 測試
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button id="btn-generate-single" class="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-xs sm:text-sm font-semibold py-3 px-4 rounded-xl shadow-lg shadow-emerald-600/15 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                            單次動態擾亂
+                        </button>
+                        <button id="btn-generate-bulk" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs sm:text-sm font-semibold py-3 px-4 rounded-xl border border-slate-300 dark:border-slate-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            批量產出 5 種變體
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Single Result Panel -->
+                <div class="card-custom border rounded-2xl p-4 sm:p-5 flex flex-col gap-4 shadow-xl">
+                    <div class="flex justify-between items-center gap-2">
+                        <span class="text-xs sm:text-sm font-semibold text-custom-muted flex items-center gap-2">
+                            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                            擾亂結果輸出
+                        </span>
+                        <button id="btn-copy-result" class="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 font-medium flex items-center gap-1 transition whitespace-nowrap">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                            複製改寫後文本
+                        </button>
+                    </div>
+                    
+                    <textarea id="result-text" readonly class="w-full h-36 input-custom border rounded-xl p-3 sm:p-4 text-xs sm:text-sm focus:outline-none resize-none font-mono" placeholder="擾亂結果會顯示在此..."></textarea>
+                    
+                    <!-- Micro Diagnostic Metrics -->
+                    <div class="panel-inner-custom rounded-xl border p-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-[10px] sm:text-xs font-mono">
+                        <div>
+                            <div class="text-slate-500 mb-0.5">原始字串 HASH (Murmur3)</div>
+                            <div id="hash-orig" class="text-slate-500 dark:text-slate-400 truncate">-</div>
+                        </div>
+                        <div>
+                            <div class="text-slate-500 mb-0.5">新字串 HASH (已打碎特徵)</div>
+                            <div id="hash-new" class="text-emerald-600 dark:text-emerald-400 font-bold truncate">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual Diagnostic Panel (Hex / Invisible Character Analyzer) -->
+                <div class="card-custom border rounded-2xl p-4 sm:p-5 flex flex-col gap-3 shadow-xl">
+                    <div class="flex justify-between items-center gap-2">
+                        <span class="text-xs sm:text-sm font-semibold text-custom-muted">
+                            隱碼與填充特徵視覺化 (Steganography Visualizer)
+                        </span>
+                        <span class="text-[10px] text-slate-500 whitespace-nowrap">實時編譯診斷</span>
+                    </div>
+                    <p class="text-[11px] sm:text-xs text-custom-muted leading-relaxed">下方渲染區會將原本肉眼不可見的零寬字元標註為 <span class="diag-tag-zwc px-1 rounded font-bold whitespace-nowrap">🔴 零寬符</span>、同形字標註為 <span class="diag-tag-homo px-1 rounded font-bold whitespace-nowrap">🔵 同形</span>、前後填充贅字標註為 <span class="diag-tag-fill px-1 rounded font-bold whitespace-nowrap">🟢 填充</span>，供您驗收混淆結構：</p>
+                    <div id="visualizer-output" class="panel-inner-custom border rounded-xl p-3 sm:p-4 h-36 text-xs text-custom-muted overflow-y-auto leading-relaxed whitespace-pre-wrap font-mono">
+                        <span class="text-slate-400 italic">尚未執行擾亂分析。請在左側配置好設定並點擊上方「單次動態擾亂」按鈕。</span>
+                    </div>
+                </div>
+
+                <!-- Bulk Variations Panel -->
+                <div id="bulk-panel" class="card-custom border rounded-2xl p-4 sm:p-5 flex flex-col gap-3 shadow-xl hidden">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs sm:text-sm font-semibold text-custom-muted">
+                            批量安全變體群 (5組獨立封包)
+                        </span>
+                        <button id="btn-close-bulk" class="text-xs text-slate-500 hover:text-slate-700">關閉</button>
+                    </div>
+                    <div id="bulk-list" class="flex flex-col gap-3 max-h-72 overflow-y-auto pr-1">
+                        <!-- Bulk items injected here -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ================= STREAMING_CHUNK: 建立 AI 老師課堂講義 (Exposed Course Guide) ================= -->
+        <div id="view-guide" class="w-full flex flex-col gap-8 card-custom border p-6 sm:p-8 rounded-2xl shadow-xl mt-4">
+            
+            <!-- Chapter Header -->
+            <div class="border-b border-slate-200/80 dark:border-slate-800 pb-4">
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">教學講義</span>
+                <h2 class="text-2xl font-bold mt-2 text-custom-main">AI 老師課堂：如何與 AI 協作開發「非 AI 型防封鎖混淆器」？</h2>
+                <p class="text-xs sm:text-sm text-custom-muted mt-1">這份教材適合直接複製，作為顧問、講師授課的教學簡報與引導講稿。</p>
+            </div>
+
+            <!-- Intro Section -->
+            <div class="flex flex-col gap-3 text-custom-desc leading-relaxed text-sm">
+                <p>
+                    各位學員、AI 架構師大家好，我是你們的 AI 協作導師。
+                </p>
+                <p>
+                    這堂課的目標非常純粹：<strong class="text-emerald-600 dark:text-emerald-400">「如何引導 AI 在不消耗大模型 Token（零成本）的前提下，寫出極致安全、具備前端視覺化診斷，且完美適應手機端 RWD 的 LINE 防封鎖工具？」</strong>
+                </p>
+                <p>
+                    這不只是一個單純的代碼專案，更是一次檢驗<strong>「人機協調、精實架構」</strong>的經典實戰案例。
+                </p>
+            </div>
+
+            <!-- Bullet Points -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="panel-inner-custom p-4 rounded-xl border flex flex-col gap-2">
+                    <span class="text-lg">💸</span>
+                    <h3 class="text-xs font-bold text-custom-main">零 Token 成本</h3>
+                    <p class="text-[11px] text-custom-muted">每日百萬次群發轉發，完全無需負擔外部大模型高昂的呼叫開銷。</p>
+                </div>
+                <div class="panel-inner-custom p-4 rounded-xl border flex flex-col gap-2">
+                    <span class="text-lg">⚡</span>
+                    <h3 class="text-xs font-bold text-custom-main">毫秒級超低延遲</h3>
+                    <p class="text-[11px] text-custom-muted">本地端純 JavaScript 計算，運行時間 &lt;5ms，極大化高併發推送效能。</p>
+                </div>
+                <div class="panel-inner-custom p-4 rounded-xl border flex flex-col gap-2">
+                    <span class="text-lg">🛡️</span>
+                    <h3 class="text-xs font-bold text-custom-main">零幻覺防護</h3>
+                    <p class="text-[11px] text-custom-muted">核心推廣網址 (URL)、聯絡人、時間等資訊獲得安全鎖定，絕不被錯誤篡改。</p>
+                </div>
+            </div>
+
+            <!-- Methodology Section -->
+            <div class="flex flex-col gap-4 border-t border-slate-200/80 dark:border-slate-800 pt-6">
+                <h3 class="text-base font-bold text-emerald-600 dark:text-emerald-400">🛠️ 三階段遞進式提示詞工法 (Prompting Strategy)</h3>
+                <p class="text-xs text-custom-muted">在與大型語言模型 (LLM) 協作大型或精緻專案時，直接丟出所有需求往往會導致 AI 遺漏細節或程式碼混亂。我們需要採用以下三階引導技巧：</p>
+                
+                <div class="flex flex-col gap-6 mt-2">
+                    <!-- Step 1 -->
+                    <div class="panel-inner-custom border p-4 rounded-xl flex flex-col gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="h-6 w-6 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-bold border border-emerald-500/20">1</span>
+                            <h4 class="text-xs font-bold text-custom-main">第一階段：演算法底層探索與對齊</h4>
+                        </div>
+                        <p class="text-xs text-custom-muted">先確認 AI 是否理解「繞過防封鎖」的安全與隱寫術原理，要求給出底層 Core Function。</p>
+                        <details class="group mt-1">
+                            <summary class="text-[11px] text-slate-500 cursor-pointer group-open:text-emerald-600 transition-colors">展開查看「第一階段提示詞範本」</summary>
+                            <pre class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-lg text-[10px] text-emerald-600 dark:text-emerald-400 font-mono overflow-x-auto mt-2 leading-relaxed">
+【角色設定】你是一位資深的網路安全專家與前端架構師。
+【技術挑戰】我需要設計一個「完全不需要呼叫 AI API」的 JavaScript 文本擾亂演算法。
+【技術規格要求】請幫我寫出以下幾種非 AI 的核心擾亂函數：
+  1. 零寬字元隱碼干擾 (隨機不規律在字與字間插入 \u200B, \u200C)
+  2. 同形異碼代換 (將英文 a-z 和 0-9 替換為外觀幾近相同但 Unicode 不同的字元)
+  3. 中文字交織輕微標點符號 (如在關鍵字間插入 ·)
+  4. 能保護原始文字中的 https:// 連結，絕對不能破壞連結的完整度與可點擊性。
+請先給我這套核心 JavaScript 演算法代碼，並使用繁體中文為代碼加上詳細註解。</pre>
+                        </details>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="panel-inner-custom border p-4 rounded-xl flex flex-col gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="h-6 w-6 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-bold border border-emerald-500/20">2</span>
+                            <h4 class="text-xs font-bold text-custom-main">第二階段：使用者介面（UI）與 RWD 視覺診斷建構</h4>
+                        </div>
+                        <p class="text-xs text-custom-muted">將邏輯整合進 RWD 網頁，並新增「Steganography Visualizer（隱碼特徵視覺化）」自證清白。</p>
+                        <details class="group mt-1">
+                            <summary class="text-[11px] text-slate-500 cursor-pointer group-open:text-emerald-600 transition-colors">展開查看「第二階段提示詞範本」</summary>
+                            <pre class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-lg text-[10px] text-emerald-600 dark:text-emerald-400 font-mono overflow-x-auto mt-2 leading-relaxed">
+【接續任務】非常好，演算法邏輯非常清晰。現在，我希望把這套演算法做成一個「單檔案 HTML」的精緻測試沙盒。
+【介面風格要求】
+  - 使用 Tailwind CSS 打造高階科技感 UI。
+  - 必須是 RWD 響應式排版：在手機端 (Mobile-first) 必須是單行垂直佈局，在桌面端 (xl Breakpoint)則自動展開為左側設定、右側輸出的 7:5 雙欄配置。
+  - 所有輸入框和按鈕在手機觸控時，必須有足夠的 Touch Target 大小，且絕不允許產生 any 水平滾動條 (Horizontal Scrolling)。
+【殺手級功能：Steganography Visualizer】
+  - 我需要在介面中加入一個實時編譯診斷區。
+  - 用 HTML 將原本「人類肉眼看不到的零寬字元」高亮顯示為紅色標籤「🔴零寬」；將同形字標註為藍色、將贅字墊片標註為綠色。
+  - 讓使用者能一眼看出：肉眼看起來一模一樣的兩段文字，在二進位和 Hash 級別上已經被徹底打碎。</pre>
+                        </details>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="panel-inner-custom border p-4 rounded-xl flex flex-col gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="h-6 w-6 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-bold border border-emerald-500/20">3</span>
+                            <h4 class="text-xs font-bold text-custom-main">第三階段：高動態贅字與版權宣告</h4>
+                        </div>
+                        <p class="text-xs text-custom-muted">引導 AI 完成動態多態數據填充（問候語與動態秒級戳記），以完美收官專案。</p>
+                        <details class="group mt-1">
+                            <summary class="text-[11px] text-slate-500 cursor-pointer group-open:text-emerald-600 transition-colors">展開查看「第三階段提示詞範本」</summary>
+                            <pre class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-lg text-[10px] text-emerald-600 dark:text-emerald-400 font-mono overflow-x-auto mt-2 leading-relaxed">
+【細節優化】請在現有的 HTML 專案中，加入「動態前後贅字墊片」模組。
+  - 允許使用者在下拉選單中選擇：前方加入隨機問候/名人名言/系統分流碼；後方加入秒級高動態時間戳 + 防封鎖微型代碼（如：[傳送驗證: #F39A 於 14:32:05]）。
+  - 請於網頁 mt-auto 的頁尾部分，加入一個磨砂玻璃質感的簡約 Footer，寫上版權宣告：「© 2026/6/8 ＡＩ就是力量」。
+  - 確保整體代碼是一個乾淨、無外部 JS 包依賴（除了 Tailwind CDN）、完全可獨立運行的 Single-File HTML。</pre>
+                        </details>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conclusion Frame -->
+            <div class="border-t border-slate-200/80 dark:border-slate-800 pt-6 flex flex-col gap-2 text-custom-desc text-xs sm:text-sm">
+                <span class="font-bold text-emerald-600 dark:text-emerald-400">💡 導師結語：精實開發 (Lean) 的思考力量</span>
+                <p class="leading-relaxed">
+                    「ＡＩ就是力量，但真正的智慧，在於知道何時<strong>克制 AI 的使用</strong>，用最精簡的代碼去創造最穩健的價值。」
+                </p>
+                <p class="leading-relaxed">
+                    這不只是程式技術的硬派對決，更是產品在現實商業運作中，在「成本」、「速度」與「防禦深度」之間取得的最佳平衡！
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-auto py-6 border-t border-slate-200 dark:border-slate-900 bg-white/60 dark:bg-slate-950/60 backdrop-blur-sm text-center px-4">
+        <p class="text-xs text-slate-500 tracking-widest hover:text-emerald-500 transition-colors duration-300">
+            © 2026/6/8 ＡＩ就是力量
+        </p>
+    </footer>
+
+    <div id="download-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div id="download-modal-backdrop" class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm"></div>
+        <!-- Modal Box -->
+        <div class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl flex flex-col gap-4 text-slate-800 dark:text-slate-100 z-10 transition-all">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+                <h3 class="text-sm sm:text-base font-bold flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                    📦 課堂原始碼取得方案
+                </h3>
+                <button id="btn-close-download-modal" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition text-lg font-bold">&times;</button>
+            </div>
+            
+            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                為了確保您在不同通訊軟體（如 LINE 預覽視窗）或平台安全沙箱環境下皆能順利使用，我們提供了以下兩種取得本套件原始碼的方式：
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-2">
+                <button id="btn-modal-direct-download" class="px-4 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl text-xs flex flex-col items-center justify-center gap-1 shadow-lg transition active:scale-95">
+                    <span class="text-base">💾</span>
+                    <span>直接下載 HTML</span>
+                    <span class="text-[9px] opacity-75">(獨立瀏覽器視窗適用)</span>
+                </button>
+                <button id="btn-modal-copy-code" class="px-4 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-xs flex flex-col items-center justify-center gap-1 shadow-lg transition active:scale-95">
+                    <span class="text-base">📋</span>
+                    <span>一鍵複製全網頁代碼</span>
+                    <span class="text-[9px] opacity-75">(100% 成功跨越沙箱)</span>
+                </button>
+            </div>
+
+            <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-[11px] text-amber-700 dark:text-amber-300 leading-relaxed">
+                <span class="font-bold">💡 ＡＩ就是力量 • 課堂觀念提示：</span><br>
+                如果您直接下載時被瀏覽器攔截（無反應），請直接點擊<strong>「一鍵複製全網頁代碼」</strong>，並在您電腦桌面新增一個純文字檔（記事本），貼上後另存新檔為 <code>index.html</code> 即可流暢執行！
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Floating Toast Alert -->
+    <div id="toast-container" class="fixed bottom-4 right-4 left-4 sm:left-auto sm:w-80 z-50 flex flex-col gap-2"></div>
+
+    <script>
+        // Preset config for synonyms swapper
+        const defaultSynonyms = {
+            "注意": ["重要公告", "務必留意", "重要提醒", "小提醒"],
+            "免費": ["不用任何費用", "0元限時體驗", "超值福利", "免預算"],
+            "活動": ["限時企劃", "特別盛典", "專案項目", "限時回饋"],
+            "點擊": ["進入", "查閱", "開啟", "前往"],
+            "連結": ["傳送門", "通道", "入口", "URL"],
+            "網址": ["連結", "地址", "跳轉通道"],
+            "馬上": ["立即", "即刻", "火速", "第一時間"],
+            "特惠": ["獨家福利", "破盤特選", "限時特價", "驚喜下殺"]
+        };
+
+        // Static fillers pools for padding strategy
+        const greetingsPool = [
+            "😊 祝您今天順心如意！",
+            "✨ 又是美好的一天，溫馨提醒：",
+            "☕ 給忙碌的自己一杯咖啡的時間：",
+            "🍀 幸運隨行，請收下這份資訊：",
+            "🌤️ 迎著朝陽，為您捎來最新消息：",
+            "🎈 願輕鬆陪伴您每分每秒，重要訊息傳達："
+        ];
+
+        const syscodesPool = [
+            "【系統分流碼：#X9A8C】",
+            "【安全派發：REG_ID_7421】",
+            "【風控協議：A-PASS】",
+            "【安全封包：ENC_B5910】",
+            "【安全校驗號：#SEC-883】",
+            "【派發通道：CH-9】"
+        ];
+
+        const quotesPool = [
+            "📖 『行動是治癒恐懼的良藥。』",
+            "📖 『最困難之時，就是我們離成功不遠之日。』",
+            "📖 『生活明朗，萬物可愛，人間值得。』",
+            "📖 『努力的意義，是為了能隨時選擇自己想要的生活。』",
+            "📖 『每一步都是积累，不用急著要回報。』"
+        ];
+
+        const disclaimerPool = [
+            "（本訊息為自動分流轉發，如有疑問請回覆系統）",
+            "（安全通道推送，若打擾請多多包涵）",
+            "（系統自動核發，請勿直接回覆）",
+            "（訊息核驗：PASS-OK）"
+        ];
+
+        const homoglyphMap = {
+            'a': 'а', 'c': 'с', 'e': 'е', 'i': 'і', 'j': 'ј', 'o': 'о', 'p': 'р', 's': 'ѕ', 'x': 'х', 'y': 'у',
+            'A': 'А', 'B': 'В', 'C': 'С', 'E': 'Е', 'H': 'Н', 'I': 'І', 'J': 'Ј', 'K': 'К', 'M': 'М', 'O': 'О',
+            'P': 'Р', 'S': 'Ѕ', 'T': 'Т', 'X': 'Х', 'Y': 'Ү', '0': '０', '1': '１', '2': '２', '3': '３', '4': '４',
+            '5': '５', '6': '６', '7': '７', '8': '８', '9': '９', ':': '：', ' ': ' '
+        };
+
+        // Murmur3 hash implementation
+        function calculateHash(str) {
+            let h = 2166136261 >>> 0;
+            for (let i = 0; i < str.length; i++) {
+                h ^= str.charCodeAt(i);
+                h = Math.imul(h, 16777619);
+            }
+            h += h << 13;
+            h ^= h >>> 7;
+            h += h << 3;
+            h ^= h >>> 17;
+            h += h << 5;
+            return "0x" + (h >>> 0).toString(16).toUpperCase();
+        }
+
+        const origTextEl = document.getElementById("original-text");
+        const resTextEl = document.getElementById("result-text");
+        const origCounter = document.getElementById("orig-char-counter");
+        
+        const enableZwc = document.getElementById("enable-zwc");
+        const zwcIntensity = document.getElementById("zwc-intensity");
+        const zwcIntensityVal = document.getElementById("zwc-intensity-val");
+        
+        const enableHomoglyph = document.getElementById("enable-homoglyph");
+        const enableInterleaving = document.getElementById("enable-interleaving");
+        const dividerSymbol = document.getElementById("divider-symbol");
+        
+        const enableSynonyms = document.getElementById("enable-synonyms");
+        const synonymsConfig = document.getElementById("synonyms-config");
+        const resetSynonymsBtn = document.getElementById("reset-synonyms");
+        
+        const enablePadding = document.getElementById("enable-padding");
+        const headerPaddingType = document.getElementById("header-padding-type");
+        const customHeaders = document.getElementById("custom-headers");
+        const footerPaddingType = document.getElementById("footer-padding-type");
+        const customFooters = document.getElementById("custom-footers");
+        
+        const hashOrig = document.getElementById("hash-orig");
+        const hashNew = document.getElementById("hash-new");
+        const visualizerOutput = document.getElementById("visualizer-output");
+        
+        const btnGenSingle = document.getElementById("btn-generate-single");
+        const btnGenBulk = document.getElementById("btn-generate-bulk");
+        const btnCopyResult = document.getElementById("btn-copy-result");
+        
+        const bulkPanel = document.getElementById("bulk-panel");
+        const bulkList = document.getElementById("bulk-list");
+        const btnCloseBulk = document.getElementById("btn-close-bulk");
+
+        const btnDownloadHtml = document.getElementById("btn-download-html");
+
+        // Theme buttons
+        const themeBtnFresh = document.getElementById("theme-btn-fresh");
+        const themeBtnCyber = document.getElementById("theme-btn-cyber");
+
+        themeBtnFresh.addEventListener("click", () => {
+            document.body.classList.remove("theme-dark-cyber");
+            themeBtnFresh.classList.add("btn-theme-active");
+            themeBtnCyber.classList.remove("btn-theme-active");
+            themeBtnCyber.classList.add("text-slate-500");
+            showToast("已切換為：清新隨主主題 🍃", "info");
+        });
+
+        themeBtnCyber.addEventListener("click", () => {
+            document.body.classList.add("theme-dark-cyber");
+            themeBtnCyber.classList.add("btn-theme-active");
+            themeBtnCyber.classList.remove("text-slate-400");
+            themeBtnFresh.classList.remove("btn-theme-active");
+            showToast("已切換為：科技暗黑主題 🌌", "info");
+        });
+
+        const downloadModal = document.getElementById("download-modal");
+        const btnCloseDownloadModal = document.getElementById("btn-close-download-modal");
+        const downloadModalBackdrop = document.getElementById("download-modal-backdrop");
+        const btnModalDirectDownload = document.getElementById("btn-modal-direct-download");
+        const btnModalCopyCode = document.getElementById("btn-modal-copy-code");
+
+        // Click download on header -> Open Modal rather than downloading silently (bypasses Sandboxing limit)
+        btnDownloadHtml.addEventListener("click", () => {
+            downloadModal.classList.remove("hidden");
+            downloadModal.classList.add("flex");
+        });
+
+        // Close Modal Handlers
+        const closeModal = () => {
+            downloadModal.classList.add("hidden");
+            downloadModal.classList.remove("flex");
+        };
+        btnCloseDownloadModal.addEventListener("click", closeModal);
+        downloadModalBackdrop.addEventListener("click", closeModal);
+
+        btnModalDirectDownload.addEventListener("click", () => {
+            try {
+                const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+                const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "LINE_AntiSpam_Sandbox_CourseKit.html";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast("本工具 HTML 檔案下載成功！可直接傳給學員並離線執行。");
+                closeModal();
+            } catch (err) {
+                showToast("直接下載被攔截，請使用「一鍵複製代碼」！", "error");
+            }
+        });
+
+        // Copy entire Page HTML Source Code from Modal (100% works in iframe sandbox)
+        btnModalCopyCode.addEventListener("click", () => {
+            try {
+                const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+                const tempTextArea = document.createElement("textarea");
+                tempTextArea.style.position = 'fixed';
+                tempTextArea.style.opacity = '0';
+                tempTextArea.value = htmlContent;
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                const success = document.execCommand('copy');
+                document.body.removeChild(tempTextArea);
+                
+                if (success) {
+                    showToast("整頁原始碼複製成功！請貼至您的本機 index.html 中。");
+                    closeModal();
+                } else {
+                    showToast("複製失敗，請手動複製", "error");
+                }
+            } catch (err) {
+                showToast("複製失敗：" + err.message, "error");
+            }
+        });
+        
+        // Show/hide custom text inputs for paddings
+        headerPaddingType.addEventListener("change", () => {
+            customHeaders.classList.toggle("hidden", headerPaddingType.value !== "custom");
+        });
+        
+        footerPaddingType.addEventListener("change", () => {
+            customFooters.classList.toggle("hidden", footerPaddingType.value !== "custom");
+        });
+
+        function setSynonymsValue(obj) {
+            synonymsConfig.value = JSON.stringify(obj, null, 2);
+        }
+        setSynonymsValue(defaultSynonyms);
+
+        resetSynonymsBtn.addEventListener("click", () => {
+            setSynonymsValue(defaultSynonyms);
+            showToast("詞庫已重設為系統預設值", "info");
+        });
+
+        // Track char counter of original text
+        origTextEl.addEventListener("input", () => {
+            const count = origTextEl.value.length;
+            origCounter.innerText = `${count} 字元`;
+            if (count > 0) {
+                hashOrig.innerText = calculateHash(origTextEl.value);
+            } else {
+                hashOrig.innerText = "-";
+            }
+        });
+
+        // Slider dynamic display
+        zwcIntensity.addEventListener("input", () => {
+            const val = parseInt(zwcIntensity.value);
+            if (val <= 3) {
+                zwcIntensityVal.innerText = `低 (每10個字注入${val}處)`;
+            } else if (val <= 7) {
+                zwcIntensityVal.innerText = `中等 (每10個字注入${val}處)`;
+            } else {
+                zwcIntensityVal.innerText = `高強度 (每10個字注入${val}處)`;
+            }
+        });
+
+        function showToast(message, type = "success") {
+            const colors = {
+                success: "bg-emerald-950 border-emerald-500/30 text-emerald-200",
+                info: "bg-slate-900 border-slate-700 text-slate-200",
+                error: "bg-rose-950 border-rose-500/30 text-rose-200"
+            };
+            const toast = document.createElement("div");
+            toast.className = `px-4 py-3 rounded-xl border ${colors[type]} text-xs font-semibold shadow-2xl flex items-center gap-2 transform translate-y-2 opacity-0 transition-all duration-300`;
+            toast.innerHTML = `
+                <span class="w-1.5 h-1.5 rounded-full shrink-0 ${type === 'error' ? 'bg-rose-400' : 'bg-emerald-400'}"></span>
+                <span>${message}</span>
+            `;
+            const container = document.getElementById("toast-container");
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove("translate-y-2", "opacity-0");
+            }, 50);
+
+            setTimeout(() => {
+                toast.classList.add("translate-y-2", "opacity-0");
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ==========================================
+        // ==========================================
+        function obfuscateCore(inputText, diagnostics = false) {
+            if (!inputText) return { text: "", report: [] };
+            
+            let workingText = inputText;
+            let report = []; 
+            
+            // 1. Core Block Protection (URL 網址保護隔離機制)
+            const urlRegex = /(https?:\/\/[^\s]+)/gi;
+            let urls = [];
+            workingText = workingText.replace(urlRegex, (match) => {
+                const placeholder = `__URL_PLACEHOLDER_${urls.length}__`;
+                urls.push({ placeholder, original: match });
+                return placeholder;
+            });
+
+            // 2. Synonyms Substitution
+            if (enableSynonyms.checked) {
+                try {
+                    const dict = JSON.parse(synonymsConfig.value);
+                    const words = Object.keys(dict).sort((a,b) => b.length - a.length);
+                    for (const word of words) {
+                        const variations = dict[word];
+                        if (Array.isArray(variations) && variations.length > 0) {
+                            const regex = new RegExp(word, 'g');
+                            workingText = workingText.replace(regex, () => {
+                                const picked = variations[Math.floor(Math.random() * variations.length)];
+                                if (diagnostics) {
+                                    report.push({ type: 'synonym', original: word, current: picked });
+                                }
+                                return picked;
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.error("Synonyms JSON Parse Error", e);
+                }
+            }
+
+            let headerPadding = "";
+            let footerPadding = "";
+            if (enablePadding.checked) {
+                // Header Block Selection
+                const hType = headerPaddingType.value;
+                if (hType === 'greetings') {
+                    headerPadding = greetingsPool[Math.floor(Math.random() * greetingsPool.length)] + "\n";
+                } else if (hType === 'syscodes') {
+                    headerPadding = syscodesPool[Math.floor(Math.random() * syscodesPool.length)] + "\n";
+                } else if (hType === 'quote') {
+                    headerPadding = quotesPool[Math.floor(Math.random() * quotesPool.length)] + "\n";
+                } else if (hType === 'custom') {
+                    const customArr = customHeaders.value.split(",").map(s => s.trim()).filter(Boolean);
+                    if (customArr.length > 0) {
+                        headerPadding = customArr[Math.floor(Math.random() * customArr.length)] + "\n";
+                    }
+                }
+
+                // Footer Block Selection
+                const fType = footerPaddingType.value;
+                if (fType === 'timecode') {
+                    const now = new Date();
+                    const rCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+                    const timestampStr = `[傳送驗證: #${rCode}於${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}]`;
+                    footerPadding = "\n\n" + timestampStr;
+                } else if (fType === 'disclaimer') {
+                    footerPadding = "\n\n" + disclaimerPool[Math.floor(Math.random() * disclaimerPool.length)];
+                } else if (fType === 'custom') {
+                    const customArr = customFooters.value.split(",").map(s => s.trim()).filter(Boolean);
+                    if (customArr.length > 0) {
+                        footerPadding = "\n\n" + customArr[Math.floor(Math.random() * customArr.length)];
+                    }
+                }
+            }
+
+            let atoms = Array.from(workingText);
+            let finalAtoms = [];
+            const zwcElements = ['\u200B', '\u200C', '\u200D', '\uFEFF'];
+
+            for (let i = 0; i < atoms.length; i++) {
+                let currentAtom = atoms[i];
+                let isPlaceholder = currentAtom === '_' && atoms.slice(i, i + 20).join('').includes('__URL_PLACEHOLDER_');
+                
+                if (isPlaceholder || (i > 0 && atoms.slice(Math.max(0, i-25), i).join('').includes('__URL_PLACEHOLDER_') && !atoms.slice(i, i+10).join('').includes('__URL_PLACEHOLDER_'))) {
+                    finalAtoms.push({ char: currentAtom, type: 'raw' });
+                    continue;
+                }
+
+                let atomReport = { char: currentAtom, type: 'raw' };
+
+                // Apply Homoglyph substitution
+                if (enableHomoglyph.checked && homoglyphMap[currentAtom]) {
+                    const swapped = homoglyphMap[currentAtom];
+                    atomReport = { char: swapped, type: 'homoglyph', original: currentAtom };
+                    currentAtom = swapped;
+                }
+
+                // Apply Interleaving dividers
+                if (enableInterleaving.checked && i > 0 && i < atoms.length - 1) {
+                    const charCode = currentAtom.charCodeAt(0);
+                    const isChinese = charCode >= 0x4E00 && charCode <= 0x9FFF;
+                    if (isChinese && Math.random() < 0.25) {
+                        const div = dividerSymbol.value;
+                        finalAtoms.push({ char: div, type: 'interleave' });
+                    }
+                }
+
+                // Apply Zero-Width character injection
+                if (enableZwc.checked) {
+                    const intensity = parseInt(zwcIntensity.value); 
+                    const threshold = intensity / 10;
+                    if (Math.random() < threshold) {
+                        const pickedZwc = zwcElements[Math.floor(Math.random() * zwcElements.length)];
+                        finalAtoms.push({ char: pickedZwc, type: 'zwc' });
+                    }
+                }
+
+                finalAtoms.push({ char: currentAtom, type: atomReport.type, original: atomReport.original });
+            }
+
+            // 5. Build raw string output and restore URL Placeholders
+            let textOutput = finalAtoms.map(a => a.char).join('');
+            urls.forEach(u => {
+                textOutput = textOutput.replace(u.placeholder, u.original);
+            });
+
+            let diagnosticHtml = "";
+            if (headerPadding) {
+                diagnosticHtml += `<span class="diag-tag-fill px-1 py-0.5 rounded mr-1 font-bold">[🟢 填充開頭: ${headerPadding.trim()}]</span>\n`;
+            }
+
+            finalAtoms.forEach(atom => {
+                if (atom.type === 'zwc') {
+                    diagnosticHtml += `<span class="diag-tag-zwc px-0.5 rounded mx-0.5 font-bold text-[10px]" title="Zero Width Space">🔴零寬</span>`;
+                } else if (atom.type === 'homoglyph') {
+                    diagnosticHtml += `<span class="diag-tag-homo px-0.5 rounded" title="Original: ${atom.original}">${atom.char}</span>`;
+                } else if (atom.type === 'interleave') {
+                    diagnosticHtml += `<span class="diag-tag-inter px-0.5 rounded" title="Interleave">${atom.char}</span>`;
+                } else {
+                    diagnosticHtml += atom.char;
+                }
+            });
+
+            urls.forEach(u => {
+                diagnosticHtml = diagnosticHtml.replace(u.placeholder, `<span class="text-purple-600 dark:text-purple-400 underline font-semibold">${u.original}</span>`);
+            });
+
+            if (footerPadding) {
+                diagnosticHtml += `\n<span class="diag-tag-fill px-1 py-0.5 rounded ml-1 font-bold">[🟢 填充結尾: ${footerPadding.trim()}]</span>`;
+            }
+
+            const finalSpunText = headerPadding + textOutput + footerPadding;
+
+            return {
+                text: finalSpunText,
+                visualizerHtml: diagnosticHtml
+            };
+        }
+
+        // Action Handlers
+        btnGenSingle.addEventListener("click", () => {
+            const raw = origTextEl.value.trim();
+            if (!raw) {
+                showToast("請輸入原始文本再進行測試", "error");
+                return;
+            }
+
+            const result = obfuscateCore(raw, true);
+            resTextEl.value = result.text;
+            visualizerOutput.innerHTML = result.visualizerHtml;
+            hashNew.innerText = calculateHash(result.text);
+            
+            showToast("防封鎖文字成功生成！");
+        });
+
+        // Copy Handler
+        btnCopyResult.addEventListener("click", () => {
+            if (!resTextEl.value) {
+                showToast("無內容可複製", "error");
+                return;
+            }
+            resTextEl.select();
+            document.execCommand('copy');
+            showToast("成功複製到剪貼簿！");
+        });
+
+        btnGenBulk.addEventListener("click", () => {
+            const raw = origTextEl.value.trim();
+            if (!raw) {
+                showToast("請輸入原始文本以進行批量生成", "error");
+                return;
+            }
+
+            bulkPanel.classList.remove("hidden");
+            bulkList.innerHTML = "";
+
+            for (let i = 1; i <= 5; i++) {
+                const variant = obfuscateCore(raw, false);
+                const hash = calculateHash(variant.text);
+                
+                const item = document.createElement("div");
+                item.className = "bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 flex flex-col gap-2 relative group hover:border-slate-300 dark:hover:border-slate-700 transition";
+                item.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-900 pb-1.5">
+                        <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">變體 #${i}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-mono text-slate-500">Hash: ${hash}</span>
+                            <button class="btn-copy-variant text-[10px] text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 font-semibold px-2 py-0.5 bg-slate-100 dark:bg-emerald-950/30 rounded border border-slate-200 dark:border-emerald-500/10 transition">
+                                複製此組
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-xs text-slate-700 dark:text-slate-300 font-mono line-clamp-3 overflow-ellipsis whitespace-pre-wrap">${variant.text}</div>
+                `;
+
+                const copyBtn = item.querySelector(".btn-copy-variant");
+                copyBtn.addEventListener("click", () => {
+                    const tempTexarea = document.createElement("textarea");
+                    tempTexarea.value = variant.text;
+                    document.body.appendChild(tempTexarea);
+                    tempTexarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempTexarea);
+                    showToast(`變體 #${i} 複製成功`);
+                });
+
+                bulkList.appendChild(item);
+            }
+            showToast("已成功渲染 5 組高度不相干特徵變體！");
+        });
+
+        btnCloseBulk.addEventListener("click", () => {
+            bulkPanel.classList.add("hidden");
+        });
+
+        // Setup default text
+        origTextEl.value = "【重要公告】今日全館滿千免運費，特惠下殺五折起，限時活動 24 小時！\n請點擊下方連結火速參與：\nhttps://your-domain.com/promo-sale";
+        origTextEl.dispatchEvent(new Event('input'));
+    </script>
+</body>
+</html>
