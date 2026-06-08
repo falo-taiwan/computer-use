@@ -62,6 +62,12 @@
     --sim-card-bg: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
     --sim-card-border: rgba(16, 185, 129, 0.25);
     --sim-card-hover-border: rgba(16, 185, 129, 0.5);
+
+    --btn-secondary-bg: rgba(15, 23, 42, 0.05);
+    --btn-secondary-border: rgba(15, 23, 42, 0.1);
+    --btn-secondary-text: #0f172a;
+    --btn-secondary-hover-bg: rgba(15, 23, 42, 0.08);
+    --btn-secondary-hover-border: rgba(15, 23, 42, 0.18);
 }
 
 .theme-dark-cyber {
@@ -115,6 +121,12 @@
     --sim-card-bg: linear-gradient(135deg, rgba(17, 22, 37, 0.8) 0%, rgba(26, 21, 44, 0.8) 100%);
     --sim-card-border: rgba(139, 92, 246, 0.35);
     --sim-card-hover-border: rgba(139, 92, 246, 0.6);
+
+    --btn-secondary-bg: rgba(255, 255, 255, 0.05);
+    --btn-secondary-border: rgba(255, 255, 255, 0.08);
+    --btn-secondary-text: #ffffff;
+    --btn-secondary-hover-bg: rgba(255, 255, 255, 0.1);
+    --btn-secondary-hover-border: rgba(255, 255, 255, 0.15);
 }
 
 /* Global Reset & Base Styles */
@@ -873,9 +885,9 @@ a:hover {
 }
 
 .btn-secondary {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: white;
+    background: var(--btn-secondary-bg);
+    border: 1px solid var(--btn-secondary-border);
+    color: var(--btn-secondary-text);
     cursor: pointer;
     font-family: inherit;
     font-weight: 600;
@@ -883,8 +895,8 @@ a:hover {
 }
 
 .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.15);
+    background: var(--btn-secondary-hover-bg);
+    border-color: var(--btn-secondary-hover-border);
 }
 
 .btn-sm {
@@ -1508,6 +1520,14 @@ a:hover {
     border: 1px dashed var(--sim-card-border) !important;
     background: var(--sim-card-bg) !important;
     margin-bottom: 1.5rem;
+}
+
+.simulator-card .card-header h2 {
+    color: var(--card-header-text) !important;
+}
+
+.simulator-card .card-header h2 i {
+    color: var(--primary) !important;
 }
 
 .simulator-card:hover {
